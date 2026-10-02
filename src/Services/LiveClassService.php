@@ -57,10 +57,19 @@ final class LiveClassService
         return $this->classes->all();
     }
 
-    /** @return list<\Wisdom\Models\LiveClass> */
+    /**
+     * Live classes visible to a student — filtered by BOTH the student's
+     * level AND their enrolled subjects. A class aimed at CPSP I is never
+     * shown to a CPSP II student, even if the subject names match.
+     *
+     * @return list<\Wisdom\Models\LiveClass>
+     */
     public function forStudent(User $student): array
     {
-        return $this->classes->forSubjects($student->getSubjects());
+        return $this->classes->forSubjects(
+            $student->getSubjects(),
+            (string) $student->getLevel()
+        );
     }
 
     /** @throws AppException */

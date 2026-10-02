@@ -68,12 +68,12 @@ function render_error_page(int $status, string $title, string $message, string $
     $safeMessage = e($message);
     $safeHint = $hint === '' ? '' : e($hint);
     $logoHref = e($baseUrl . '/assets/img/logo.png');
-    $homeHref = e($baseUrl . '/landing.php');
+    $homeHref = e($baseUrl . '/dashboard.php');
 
     echo <<<HTML
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{$safeTitle} · WISDOM</title>
+<title>{$safeTitle} · WISDOM BLENDED CLASSES</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#fdfbf6;color:#0e1520;font:16px/1.6 system-ui,sans-serif}.card{width:min(100%,560px);padding:48px 32px;border:1px solid #e3e0d6;border-radius:20px;background:#fbf9f4;box-shadow:0 32px 80px #061a2c2e;text-align:center}.code{margin:0;color:#0d2b45;font:700 5rem/1 Georgia,serif}.rule{height:2px;max-width:120px;margin:24px auto;background:linear-gradient(90deg,#c9a227 0 30%,transparent 30%)}h1{margin:12px 0 16px;color:#0d2b45;font:700 1.4rem Georgia,serif}.hint{color:#5a6a7d;font-size:14px}.btn{display:inline-block;padding:12px 20px;border-radius:10px;background:#c9a227;color:#061a2c;font-weight:700;text-decoration:none}</style></head><body>
 <main class="card"><p class="code">{$status}</p><div class="rule"></div><h1>{$safeTitle}</h1><p>{$safeMessage}</p><p class="hint">{$safeHint}</p><a class="btn" href="{$homeHref}">Return home</a></main>
 </body></html>

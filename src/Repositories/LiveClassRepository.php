@@ -32,14 +32,13 @@ final class LiveClassRepository
     }
 
     /**
-     * Student view: every live class whose subject name matches one of the
-     * student's enrolled subjects (regardless of the class's own level —
-     * this is what allows a CPSP II student to see a CPSP I class).
+     * Live classes visible to a student, filtered by level AND subject.
+     * A student only sees a class aimed at their own level.
      *
      * @param list<string> $subjectNames
      * @return list<LiveClass>
      */
-    public function forSubjects(array $subjectNames): array
+    public function forSubjects(array $subjectNames, ?string $level = null): array
     {
         $subjectNames = array_values(array_filter($subjectNames, 'is_string'));
         if ($subjectNames === []) {
@@ -47,10 +46,19 @@ final class LiveClassRepository
         }
 
         $placeholders = implode(',', array_fill(0, count($subjectNames), '?'));
+        $params       = $subjectNames;
+
+        $where = 'subject_name IN (' . $placeholders . ')';
+
+        if ($level !== null && $level !== '') {
+            $where   .= ' AND level = ?';
+            $params[] = $level;
+        }
+
         $rows = $this->db->fetchAll(
-            'SELECT * FROM live_classes WHERE subject_name IN (' . $placeholders . ') '
-            . 'ORDER BY scheduled_at DESC',
-            $subjectNames
+            'SELECT * FROM live_classes WHERE ' . $where
+            . ' ORDER BY scheduled_at DESC',
+            $params
         );
 
         return array_map(static fn (array $row): LiveClass => LiveClass::fromRow($row), $rows);

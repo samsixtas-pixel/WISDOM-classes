@@ -69,8 +69,8 @@ if (Request::isPost()) {
 <body class="auth-page">
 <main class="auth-card">
     <div class="auth-brand">
-        <p class="auth-heading-small">WISDOM BLENDED CLASSES</p>
-        <h1 class="auth-heading-large">Create account</h1>
+        <p class="auth-heading-large">WISDOM BLENDED CLASSES</p>
+        <h1 class="auth-heading-small">Create account</h1>
     </div>
     <p class="auth-brand__lead">Set up your learner profile to get started.</p>
 

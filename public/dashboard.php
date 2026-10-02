@@ -34,9 +34,15 @@ $pageDesc = 'Your WISDOM learner workspace.';
         <?php require __DIR__ . '/partials/notice.php'; ?>
         <header style="margin-bottom:var(--s-8)">
             <div class="row gap-4" style="align-items:center;flex-wrap:wrap">
-                <img class="avatar avatar--hero" src="avatar.php?id=<?= (int) $user->getId() ?>&v=<?= e(substr((string) ($user->getAvatar() ?? 'default'), 0, 12)) ?>" alt="" width="64" height="64" loading="eager" decoding="async" fetchpriority="high">
+                <div style="position:relative;display:inline-block">
+                    <img class="avatar avatar--hero" src="avatar.php?id=<?= (int) $user->getId() ?>&v=<?= e(substr((string) ($user->getAvatar() ?? 'default'), 0, 12)) ?>" alt="" width="64" height="64" loading="eager" decoding="async" fetchpriority="high">
+                    <img src="images/logo.jpeg" alt="WISDOM Logo" style="position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:6px;border:2px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.18);object-fit:cover" width="24" height="24">
+                </div>
                 <div style="min-width:0;flex:1"><div class="eyebrow">Your workspace</div><h1 style="margin:6px 0 4px">Welcome back, <?= e(explode(' ', $user->getName())[0]) ?>.</h1><p class="text-muted mb-0">Here is a summary of your learning account.</p></div>
-                <?php if (!$fullyPaid): ?><a class="btn btn--gold" href="fees.php">Submit a payment</a><?php endif; ?>
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                    <img src="images/logo.jpeg" alt="WISDOM Logo" style="height:44px;width:44px;border-radius:10px;border:1px solid var(--line);box-shadow:var(--shadow-1);object-fit:cover" width="44" height="44">
+                    <?php if (!$fullyPaid): ?><a class="btn btn--gold" href="fees.php">Submit a payment</a><?php endif; ?>
+                </div>
             </div>
         </header>
         <section class="stat-grid" aria-label="Account summary">

@@ -56,7 +56,12 @@ if ($isStudent) {
 } elseif ($isAdmin) {
     $groups = [
         'Overview' => [['admin','admin.php','Dashboard',$icon['home'],null]],
-        'Tasks' => [['admin-payments','admin-payments.php','Fees verification',$icon['card'],$pendingPayments ?: null],['admin-exams','admin-exams.php','Examinations',$icon['exam'],null],['admin-notices','admin-notices.php','Notices',$icon['bell'],null]],
+        'Tasks' => [
+            ['admin-payments',     'admin-payments.php',     'Fees verification', $icon['card'],  $pendingPayments ?: null],
+            ['admin-exams',        'admin-exams.php',        'Examinations',      $icon['exam'],  null],
+            ['admin-live-classes', 'admin-live-classes.php', 'Live classes',      $icon['video'], null],
+            ['admin-notices',      'admin-notices.php',      'Notices',           $icon['bell'],  null],
+        ],
         'People' => [['admin-users','admin-users.php','All users',$icon['users'],$totalUsers ?: null],['admin-add-user','admin-add-user.php','Add user',$icon['plus'],null]],
         'Security' => [['admin-password-resets','admin-password-resets.php','Reset requests',$icon['shield'],$pendingResetCount ?: null]],
         'Insights' => [['reports','reports.php','Reports',$icon['chart'],null]],
@@ -75,10 +80,10 @@ if ($isStudent) {
 ?>
 <header class="mobile-bar" role="banner">
     <button class="hamburger" id="hamburger" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <a href="<?= $isStudent ? 'dashboard.php' : 'admin.php' ?>" class="mobile-bar__logo"><img src="assets/img/logo.png" alt="" width="40" height="40" loading="eager" decoding="async" fetchpriority="high"><div class="mobile-bar__wordmark"><div class="wordmark">WISDOM</div><div class="wordmark-sub">BLENDED CLASSES</div></div></a>
+    <a href="<?= $isStudent ? 'dashboard.php' : 'admin.php' ?>" class="mobile-bar__logo"><img src="images/logo.jpeg" alt="" width="40" height="40" loading="eager" decoding="async" fetchpriority="high"><div class="mobile-bar__wordmark"><div class="wordmark">WISDOM</div><div class="wordmark-sub">BLENDED CLASSES</div></div></a>
 </header>
 <aside id="sidebar" class="rail" role="navigation" aria-label="Main navigation">
-    <div class="rail__brand"><img src="assets/img/logo.png" alt="WISDOM" class="rail__logo" width="48" height="48"><div class="rail__wordmark"><div class="wordmark">WISDOM</div><div class="wordmark-sub">Blended Classes</div></div><button class="rail__close" id="rail-close" type="button" aria-label="Close navigation"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div class="rail__brand"><img src="images/logo.jpeg" alt="WISDOM" class="rail__logo" width="48" height="48"><div class="rail__wordmark"><div class="wordmark">WISDOM</div><div class="wordmark-sub">Blended Classes</div></div><button class="rail__close" id="rail-close" type="button" aria-label="Close navigation"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
     <?php foreach ($groups as $title => $links): ?><div class="rail__section"><?php if ($title !== ''): ?><p class="rail__section-title"><?= e($title) ?></p><?php endif; ?><?php foreach ($links as [$key,$href,$label,$svg,$badge]): ?><a class="rail__link <?= $active === $key ? 'is-active' : '' ?>" href="<?= e($href) ?>" <?= $active === $key ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= $svg ?></span><span><?= e($label) ?></span><?php if ($badge !== null): ?><span class="rail-badge" aria-label="<?= (int) $badge ?> items"><?= (int) $badge ?></span><?php endif; ?></a><?php endforeach; ?></div><?php endforeach; ?>
     <div class="rail__foot"><div class="rail__user"><img class="rail__user-avatar" src="avatar.php?id=<?= (int) $user->getId() ?>&amp;v=<?= e(substr((string) ($user->getAvatar() ?? 'default'),0,12)) ?>" alt="" loading="lazy" decoding="async" width="40" height="40"><div><div class="rail__user-name"><?= e($user->getName()) ?></div><div class="rail__user-role"><?= e($user->roleLabel()) ?></div></div></div><a class="rail__link" href="logout.php" style="margin-top:8px"><?= $icon['logout'] ?><span>Log out</span></a></div>
 </aside>

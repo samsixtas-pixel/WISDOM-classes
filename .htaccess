@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Never expose application internals when Apache is pointed at the project root.
+RewriteRule ^(?:\.env(?:\..*)?|config|src|database|storage|vendor|bin)(?:/|$) - [F,NC,L]
+
+# Leave files in the actual public directory alone.
+RewriteRule ^public/ - [L]
+
+# Route requests that do not map to existing files to the public folder.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ public/$1 [L]

@@ -1,0 +1,4 @@
+# Uploaded payment proofs and log files must never be served directly.
+# They are only readable through payment_proof.php, which checks the
+# viewer's session and permissions first.
+Require all denied

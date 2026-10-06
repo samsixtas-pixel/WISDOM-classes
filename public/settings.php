@@ -53,7 +53,7 @@ if (Request::isPost()) {
 <?= csrf_field() ?>
 <label for="current_password">Current password</label><input id="current_password" name="current_password" type="password" autocomplete="current-password" required>
 <label for="new_password">New password</label><input id="new_password" name="new_password" type="password" minlength="8" autocomplete="new-password" required>
-<label for="new_password_confirmation">Confirm new password</label><input id="new_password_confirmation" name="new_password_confirmation" type="password" minlength="8" autocomplete="new-password" required>
-<button type="submit">Update password</button>
+<label for="new_password_confirmation">Confirm new password</label><input id="new_password_confirmation" name="new_password_confirmation" type="password" minlength="8" autocomplete="new-password" required><br><br>
+<button class="btn btn--gold" type="submit">Update password</button>
 </form></section>
 </main></div><script src="assets/js/wisdom-ui.js" defer></script></body></html>

@@ -52,6 +52,16 @@ final class PaymentRepository implements RepositoryInterface
         ) > 0;
     }
 
+    /** Sum of approved payment amounts for a given fee category. */
+    public function approvedTotalFor(int $userId, string $category): int
+    {
+        return (int) $this->db->fetchValue(
+            "SELECT COALESCE(SUM(amount), 0) FROM payments "
+            . "WHERE user_id = ? AND category = ? AND status = 'approved'",
+            [$userId, $category]
+        );
+    }
+
     /** Joined with the payer's name/email for the admin table. */
     public function allWithPayer(int $limit = 200): array
     {

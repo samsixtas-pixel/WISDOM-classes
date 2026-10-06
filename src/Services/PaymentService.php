@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Wisdom\Services;
 
+use Wisdom\Core\App;
 use Wisdom\Core\AppException;
+use Wisdom\Core\Cache;
 use Wisdom\Core\Database;
 use Wisdom\Models\Payment;
 use Wisdom\Models\User;
@@ -43,6 +45,7 @@ final class PaymentService
             }
         });
 
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($admin->getId(), 'payment.reviewed', "payment #$paymentId -> $status");
     }
 

@@ -140,10 +140,11 @@ final class App
     private static function build(string $class): object
     {
         return match ($class) {
+            Cache::class                  => new Cache((string) self::config('cache.dir', WISDOM_ROOT . '/storage/cache'), (int) self::config('cache.ttl', 300)),
             Database::class               => new Database(self::config('db')),
             RateLimiter::class            => new RateLimiter((string) self::config('rate_limit.dir')),
             UserRepository::class         => new UserRepository(self::get(Database::class)),
-            SubjectRepository::class      => new SubjectRepository(self::get(Database::class)),
+            SubjectRepository::class      => new SubjectRepository(self::get(Database::class), self::get(Cache::class)),
             PaymentRepository::class      => new PaymentRepository(self::get(Database::class)),
             ExamRepository::class         => new ExamRepository(self::get(Database::class)),
             LoginAttemptRepository::class => new LoginAttemptRepository(self::get(Database::class)),
@@ -186,6 +187,7 @@ final class App
                 self::get(ExamRepository::class),
                 self::get(UserRepository::class),
                 self::get(AuditLogRepository::class),
+                self::get(Database::class),
             ),
             UserService::class            => new UserService(
                 self::get(UserRepository::class),
@@ -199,6 +201,7 @@ final class App
             SettingService::class         => new SettingService(
                 self::get(SettingRepository::class),
                 self::get(AuditLogRepository::class),
+                self::get(Cache::class),
             ),
             NoticeService::class          => new NoticeService(
                 self::get(NoticeRepository::class),
@@ -309,10 +312,17 @@ final class App
         header('Pragma: no-cache');
         header('Expires: 0');
         header(
-            "Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-" . self::$nonce . "'; "
-            . "style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; "
-            . "connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; "
-            . "form-action 'self'; frame-ancestors 'none'"
+            "Content-Security-Policy: default-src 'self'; "
+            . "script-src 'self' 'nonce-" . self::$nonce . "'; "
+            . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            . "img-src 'self' data:; "
+            . "font-src 'self' data: https://fonts.gstatic.com; "
+            . "connect-src 'self'; "
+            . "media-src 'self'; "
+            . "object-src 'none'; "
+            . "base-uri 'self'; "
+            . "form-action 'self'; "
+            . "frame-ancestors 'none'"
         );
         if (Session::isHttps()) {
             header('Strict-Transport-Security: max-age=31536000; includeSubDomains');

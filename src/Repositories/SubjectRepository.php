@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Wisdom\Repositories;
 
+use Wisdom\Core\Cache;
 use Wisdom\Core\Database;
 use Wisdom\Models\User;
 
@@ -13,8 +14,12 @@ use Wisdom\Models\User;
  */
 final class SubjectRepository
 {
-    public function __construct(private Database $db)
-    {
+    private const CACHE_TTL_SECONDS = 300;
+
+    public function __construct(
+        private Database $db,
+        private Cache $cache,
+    ) {
     }
 
     /** @return list<string> */
@@ -26,13 +31,15 @@ final class SubjectRepository
     /** @return array<string,list<string>> level => subjects */
     public function catalogue(): array
     {
-        $rows = $this->db->fetchAll('SELECT level, name FROM subjects ORDER BY level, name');
-        $catalogue = array_fill_keys(User::LEVELS, []);
-        foreach ($rows as $row) {
-            $catalogue[(string) $row['level']][] = (string) $row['name'];
-        }
+        return $this->cache->remember('subjects.catalogue', self::CACHE_TTL_SECONDS, function (): array {
+            $rows = $this->db->fetchAll('SELECT level, name FROM subjects ORDER BY level, name');
+            $catalogue = array_fill_keys(User::LEVELS, []);
+            foreach ($rows as $row) {
+                $catalogue[(string) $row['level']][] = (string) $row['name'];
+            }
 
-        return $catalogue;
+            return $catalogue;
+        });
     }
 
     /** @return list<string> */

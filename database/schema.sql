@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS exams (
     weight        DECIMAL(6,2) NOT NULL DEFAULT 100.00,
     result        DECIMAL(6,2) NULL,
     grade         VARCHAR(5)   NULL,
+    outcome       ENUM('pass','fail') NULL DEFAULT NULL,
     status        ENUM('scheduled','completed','published') NOT NULL DEFAULT 'scheduled',
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY idx_exams_user (user_id),

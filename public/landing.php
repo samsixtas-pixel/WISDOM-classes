@@ -151,6 +151,9 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
             --radius-md: 10px;
             --radius-lg: 16px;
             --radius-xl: 20px;
+            --w-container-max: min(100% - 48px, 1360px);
+            --w-container-wide: min(100% - 64px, 1680px);
+            --w-container-4k: min(100% - 80px, 2100px);
         }
 
         html {
@@ -201,9 +204,9 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         }
 
         .w-nav__container {
-            max-width: 1200px;
+            max-width: var(--w-container-wide);
             margin: 0 auto;
-            padding: 12px 24px;
+            padding: 14px clamp(16px, 3vw, 40px);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -362,23 +365,76 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         }
 
         .w-icon-lg {
-            width: 22px;
-            height: 22px;
+            width: 23px;
+            height: 23px;
         }
 
         /* Mobile Hamburger */
         .w-nav__toggle {
             display: none;
             background: transparent;
-            border: 0;
-            padding: 6px;
+            border: 1px solid var(--w-line);
+            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            min-height: 42px;
+            padding: 0;
+            margin: 0;
+            place-items: center;
             cursor: pointer;
-            color: var(--w-navy-800);
-            border-radius: 6px;
+            color: var(--w-navy-900);
+            z-index: 1002;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            position: relative;
         }
 
         .w-nav__toggle:hover {
             background: var(--w-paper);
+            border-color: var(--w-gold-600);
+        }
+
+        .w-nav__toggle:active {
+            transform: scale(0.95);
+        }
+
+        .w-nav__toggle svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.2;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .w-nav__toggle .icon-close {
+            display: none;
+        }
+
+        .w-nav__toggle.is-open .icon-hamburger {
+            display: none;
+        }
+
+        .w-nav__toggle.is-open .icon-close {
+            display: block;
+        }
+
+        .w-nav__backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 26, 44, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .w-nav__backdrop.is-open {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* -------------------------------------------------------------
@@ -391,12 +447,12 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         }
 
         .w-hero__container {
-            max-width: 1200px;
+            max-width: var(--w-container-wide);
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
             align-items: center;
-            gap: 48px;
+            gap: clamp(32px, 4vw, 64px);
         }
 
         .w-hero__pill {
@@ -534,7 +590,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         }
 
         .w-container {
-            max-width: 1200px;
+            max-width: var(--w-container-wide);
             margin: 0 auto;
         }
 
@@ -1071,7 +1127,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         }
 
         .w-footer__container {
-            max-width: 1200px;
+            max-width: var(--w-container-wide);
             margin: 0 auto;
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -1139,7 +1195,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         }
 
         .w-footer__copy {
-            max-width: 1200px;
+            max-width: var(--w-container-wide);
             margin: 20px auto 0;
             text-align: center;
             font-size: 0.82rem;
@@ -1172,22 +1228,203 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                 display: none;
             }
             .w-nav__toggle {
-                display: block;
+                display: grid !important;
             }
+
+            /* ---------- NEOMORPHIC MOBILE MENU ----------
+               The menu sits on a warm cream base, so the neomorphic
+               dual-tone shadows read correctly. */
             .w-nav__menu.open {
-                display: flex;
+                display: flex !important;
                 flex-direction: column;
                 position: absolute;
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: #ffffff;
-                padding: 20px 24px;
-                border-top: 1px solid var(--w-line);
-                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-                align-items: flex-start;
-                gap: 14px;
+                background: #f0ece3;
+                padding: 20px 18px 26px;
+                border-top: 1px solid rgba(255, 255, 255, 0.6);
+                border-bottom: 2px solid var(--w-gold-600);
+                box-shadow:
+                    0 20px 40px rgba(6, 26, 44, 0.18),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+                align-items: stretch;
+                gap: 10px;
+                z-index: 999;
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+                animation: wMenuSlideDown 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
+
+            .w-nav__menu.open li {
+                width: 100%;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* ---------- NEOMORPHIC LINK TILES ----------
+               Each nav link is a soft embossed tile.
+               Dual shadow: dark bottom-right + light top-left. */
+            .w-nav__menu.open .w-nav__link {
+                position: relative;
+                display: flex;
+                align-items: center;
+                width: 100%;
+                padding: 14px 18px;
+                font-size: 0.98rem;
+                font-weight: 700;
+                color: var(--w-navy-900);
+                background: #f0ece3;
+                border-radius: 14px;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                box-shadow:
+                    5px 5px 10px rgba(175, 168, 155, 0.55),
+                    -5px -5px 10px rgba(255, 255, 255, 0.95);
+                transition:
+                    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                    color 0.2s ease;
+                text-decoration: none;
+                letter-spacing: -0.005em;
+            }
+
+            .w-nav__menu.open .w-nav__link::after {
+                display: none;
+            }
+
+            /* Hover / focus: lift + deeper shadow */
+            .w-nav__menu.open .w-nav__link:hover,
+            .w-nav__menu.open .w-nav__link:focus-visible {
+                transform: translateY(-2px);
+                color: var(--w-navy-900);
+                background: #f4f0e8;
+                box-shadow:
+                    7px 7px 14px rgba(175, 168, 155, 0.65),
+                    -7px -7px 14px rgba(255, 255, 255, 1);
+                text-decoration: none;
+            }
+
+            /* Pressed state: dual shadows flip to insets */
+            .w-nav__menu.open .w-nav__link:active {
+                transform: translateY(1px) scale(0.99);
+                box-shadow:
+                    inset 3px 3px 7px rgba(175, 168, 155, 0.65),
+                    inset -3px -3px 7px rgba(255, 255, 255, 0.95);
+                transition-duration: 80ms;
+            }
+
+            /* Small gold dot indicator on the left of each item */
+            .w-nav__menu.open .w-nav__link::before {
+                content: "";
+                display: block;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--w-gold-600);
+                margin-right: 12px;
+                flex-shrink: 0;
+                box-shadow: 0 0 6px rgba(201, 162, 39, 0.5);
+            }
+
+            /* ---------- SIGN IN / SIGN UP BUTTONS ----------
+               Live inside the mobile menu, at the bottom.
+               Same neomorphic depth as the tiles above, but with
+               gold / navy colouring so they read as actions. */
+            .w-nav__mobile-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 16px;
+                padding-top: 18px;
+                border-top: 1px solid rgba(175, 168, 155, 0.35);
+                width: 100%;
+            }
+
+            .w-nav__mobile-actions .w-mobile-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                padding: 15px 18px;
+                border-radius: 14px;
+                font-size: 0.98rem;
+                font-weight: 700;
+                text-decoration: none;
+                border: 1px solid rgba(255, 255, 255, 0.35);
+                transition:
+                    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 0.2s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .w-mobile-btn:hover {
+                transform: translateY(-2px);
+                text-decoration: none;
+            }
+
+            .w-mobile-btn:active {
+                transform: translateY(1px) scale(0.99);
+                box-shadow:
+                    inset 3px 3px 7px rgba(0, 0, 0, 0.25),
+                    inset -2px -2px 5px rgba(255, 255, 255, 0.15);
+                transition-duration: 80ms;
+            }
+
+            /* Sign In — Navy glass/neo */
+            .w-mobile-btn--signin {
+                color: #ffffff;
+                background: linear-gradient(145deg, #173b5e 0%, #0a2440 100%);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                    inset 0 -2px 4px rgba(0, 0, 0, 0.25),
+                    5px 5px 12px rgba(175, 168, 155, 0.55),
+                    -5px -5px 12px rgba(255, 255, 255, 0.85);
+            }
+            .w-mobile-btn--signin:hover {
+                background: linear-gradient(145deg, #1f4a72 0%, #0d2b45 100%);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                    7px 7px 16px rgba(175, 168, 155, 0.65),
+                    -7px -7px 16px rgba(255, 255, 255, 1);
+                color: #ffffff;
+            }
+
+            /* Sign Up — Gold glass/neo */
+            .w-mobile-btn--signup {
+                color: #ffffff;
+                background: linear-gradient(145deg, #d4af37 0%, #c9a227 55%, #9a7610 100%);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+                    inset 0 -2px 4px rgba(120, 90, 15, 0.35),
+                    5px 5px 12px rgba(175, 168, 155, 0.55),
+                    -5px -5px 12px rgba(255, 255, 255, 0.85);
+            }
+            .w-mobile-btn--signup:hover {
+                background: linear-gradient(145deg, #e0c14d 0%, #b58f1f 100%);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+                    7px 7px 16px rgba(175, 168, 155, 0.65),
+                    -7px -7px 16px rgba(255, 255, 255, 1);
+                color: #ffffff;
+            }
+        }
+
+        @keyframes wMenuSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 860px) {
             .w-program-grid,
             .w-approach-grid,
             .w-features-grid,
@@ -1221,7 +1458,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         <nav class="w-nav" id="wNav" aria-label="Primary navigation">
             <div class="w-nav__container">
                 <a href="landing.php" class="w-nav__logo" aria-label="WISDOM BLENDED CLASSES Home">
-                    <img src="images/logo.jpeg" alt="WISDOM Logo" class="w-nav__logo-img" width="42" height="42">
+                    <img src="images/logo.jpeg" alt="WISDOM Logo" class="w-nav__logo-img" width="77" height="77">
                     <div class="w-nav__brand-text">
                         <span class="w-nav__brand-title">WISDOM</span>
                         <span class="w-nav__brand-sub">Blended Classes</span>
@@ -1236,19 +1473,39 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                     <li><a href="#why-us" class="w-nav__link">Why Choose Us</a></li>
                     <li><a href="#faqs" class="w-nav__link">FAQs</a></li>
                     <li><a href="#contact" class="w-nav__link">Contact</a></li>
+
+                    <!-- Sign in / Sign up — visible only inside the mobile menu -->
+                    <li class="w-nav__mobile-actions">
+                        <a href="login.php" class="w-mobile-btn w-mobile-btn--signin">
+                            <svg class="w-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"></path>
+                            </svg>
+                            <span>Sign In</span>
+                        </a>
+                        <a href="register.php" class="w-mobile-btn w-mobile-btn--signup">
+                            <svg class="w-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3M6.75 7.5a3 3 0 106 0 3 3 0 00-6 0zM2.25 20.25a6.75 6.75 0 0113.5 0v.75H2.25v-.75z"></path>
+                            </svg>
+                            <span>Create Account</span>
+                        </a>
+                    </li>
                 </ul>
 
-                <div class="w-nav__actions">
+                <!--<div class="w-nav__actions">
                     <a href="login.php" class="w-btn w-btn--ghost">Login</a>
                     <a href="register.php" class="w-btn w-btn--gold">Register</a>
-                </div>
+                </div>-->
 
-                <button class="w-nav__toggle" id="wNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-                    <svg class="w-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <button class="w-nav__toggle" id="wNavToggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="wNavMenu">
+                    <svg class="icon-hamburger" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg class="icon-close" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
+            <div class="w-nav__backdrop" id="wNavBackdrop" aria-hidden="true"></div>
         </nav>
     </header>
 
@@ -1279,12 +1536,12 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                     </div>
                     <div class="w-hero__metrics">
                         <div>
-                            <span class="w-metric__num">PD I &amp; PD II</span>
+                            <span class="w-metric__num">PD I, PD II, CPSP I &amp; CPSP II</span>
                             <span class="w-metric__label">Curriculum Levels</span>
                         </div>
                         <div>
                             <span class="w-metric__num">Blended</span>
-                            <span class="w-metric__label">Kurasini &amp; Online</span>
+                            <span class="w-metric__label">Dar es Salaam &amp; Online</span>
                         </div>
                         <div>
                             <span class="w-metric__num">Structured</span>
@@ -1299,7 +1556,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                         <div class="w-hero__caption-bar">
                             <div>
                                 <div class="w-caption-title">Physical &amp; Online Cohorts</div>
-                                <div class="w-caption-sub">Kurasini Centre &amp; Interactive Sessions</div>
+                                <div class="w-caption-sub">Dar es Salaam &amp; Interactive Sessions</div>
                             </div>
                             <span class="w-badge-tag" style="font-size:0.75rem; font-weight:700; color:var(--w-gold-600); text-transform:uppercase; letter-spacing:0.05em;">CPSP Exam Prep</span>
                         </div>
@@ -1371,7 +1628,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                     <article class="w-program-card">
                         <div>
                             <span class="w-card-badge">Foundational &amp; Intermediate</span>
-                            <h3>CPSP Professional Development I (PD I)</h3>
+                            <h3>PD I &amp; CPSP I </h3>
                             <p>
                                 Introduces core concepts in procurement principles, organizational processes, contract management, supply chain operations, and professional practice.
                             </p>
@@ -1382,14 +1639,14 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                                 <li>Participate in guided revision exercises.</li>
                             </ul>
                         </div>
-                        <a href="register.php" class="w-btn w-btn--gold" style="width:100%;">Enroll for PD I</a>
+                        <a href="register.php" class="w-btn w-btn--gold" style="width:100%;">Enroll for PD I &amp; CPSP I</a>
                     </article>
 
                     <!-- PD II -->
                     <article class="w-program-card">
                         <div>
                             <span class="w-card-badge">Advanced Competencies</span>
-                            <h3>CPSP Professional Development II (PD II)</h3>
+                            <h3>PD II &amp; CPSP II</h3>
                             <p>
                                 Focuses on advanced strategic procurement, analytical decision-making, and practical application within modern supply chain environments.
                             </p>
@@ -1400,7 +1657,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                                 <li>Prepare systematically for CPSP examinations.</li>
                             </ul>
                         </div>
-                        <a href="register.php" class="w-btn w-btn--navy" style="width:100%;">Enroll for PD II</a>
+                        <a href="register.php" class="w-btn w-btn--navy" style="width:100%;">Enroll for PD II &amp; CPSP II</a>
                     </article>
                 </div>
             </div>
@@ -1422,7 +1679,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                         <img src="image/blended-classes.jpg" alt="Physical classroom sessions at Kurasini" class="w-approach-thumb" loading="lazy">
                         <div class="w-approach-body">
                             <h3>Physical Sessions</h3>
-                            <p>Direct interaction with instructors and candidates at our Kurasini center for face-to-face collaborative discussions.</p>
+                            <p>Direct interaction with instructors and candidates at our Dar es Salaam center for face-to-face collaborative discussions.</p>
                         </div>
                     </div>
 
@@ -1592,7 +1849,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                             <svg class="w-faq-arrow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path></svg>
                         </button>
                         <div class="w-faq-body">
-                            <p>Any candidate pursuing CPSP PD I or CPSP PD II may enrol in our classes.</p>
+                            <p>Any candidate pursuing CPSP I, PD I, PD II or CPSP II may enrol in our classes.</p>
                         </div>
                     </div>
 
@@ -1612,7 +1869,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                             <svg class="w-faq-arrow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path></svg>
                         </button>
                         <div class="w-faq-body">
-                            <p>Physical classes are conducted at Kurasini, Dar es Salaam.</p>
+                            <p>Physical classes are conducted at Dar es Salaam, Tanzania.</p>
                         </div>
                     </div>
 
@@ -1646,10 +1903,10 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                     <div class="w-contact-copy">
                         <span class="w-eyebrow" style="color:var(--w-gold-400);">Contact Us</span>
                         <h3>Begin Your Professional Development Journey Today</h3>
-                        <p>Whether you are preparing for CPSP PD I or CPSP PD II, Wisdom Blended Classes is ready to support your examination success and career growth.</p>
+                        <p>Whether you are preparing for CPSP I, PD I, CPSP II or PD II, Wisdom Blended Classes is ready to support your examination success and career growth.</p>
                         <div style="display:flex; gap:12px; flex-wrap:wrap;">
                             <a href="register.php" class="w-btn w-btn--gold">Register Now</a>
-                            <a href="https://wa.me/255772382320" target="_blank" rel="noopener noreferrer" class="w-btn w-btn--ghost" style="color:#ffffff; border-color:rgba(255,255,255,0.25);">
+                            <a href="https://wa.me/255779922320" target="_blank" rel="noopener noreferrer" class="w-btn w-btn--ghost" style="color:#3ade08; border-color:rgba(255,255,255,0.25);">
                                 <span>WhatsApp Support</span>
                                 <svg class="w-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path></svg>
                             </a>
@@ -1662,9 +1919,9 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                                 <svg class="w-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"></path></svg>
                             </div>
                             <div>
-                                <div class="w-point-label">Call / WhatsApp</div>
+                                <div class="w-point-label">Call </div>
                                 <div class="w-point-val">
-                                    <a href="tel:+255772382320">+255 772 382 320</a> &nbsp;|&nbsp; <a href="tel:+255673266852">+255 673 266 852</a>
+                                    <a href="tel:+255779922320">+255 779 922 320 | +255 693 902 320</a> <!--&nbsp;|&nbsp; <a href="tel:+255673266852">+255 673 266 852</a>-->
                                 </div>
                             </div>
                         </div>
@@ -1676,7 +1933,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                             <div>
                                 <div class="w-point-label">Physical Learning Centre</div>
                                 <div class="w-point-val">
-                                    <span>Kurasini, Dar es Salaam, Tanzania</span>
+                                    <span> Dar es Salaam, Tanzania</span>
                                 </div>
                             </div>
                         </div>
@@ -1688,7 +1945,7 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                             <div>
                                 <div class="w-point-label">Admissions &amp; Enquiries</div>
                                 <div class="w-point-val">
-                                    <span>Open for Upcoming CPSP Cycle</span>
+                                    <span>Open for Upcoming PD &amp;CPSP Cycle</span>
                                 </div>
                             </div>
                         </div>
@@ -1709,6 +1966,12 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
                 <div class="w-footer__motto">Learn • Think • Grow</div>
                 <p class="w-footer__desc">
                     Providing professional learning support for CPSP candidates through quality education, flexible learning, and examination-focused preparation.
+                </p>
+                <p style="margin-top:16px; font-size:0.88rem; color:var(--w-ink-400);">
+                    <svg class="w-icon" style="vertical-align:-3px; margin-right:6px; color:var(--w-gold-400);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path>
+                    </svg>
+                    <a href="mailto:wisdom.blendedclasses@outlook.com" style="color:var(--w-gold-400); text-decoration:none;">wisdom.blendedclasses@outlook.com</a>
                 </p>
             </div>
 
@@ -1733,9 +1996,10 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
         </div>
     </footer>
 
-    <!-- Executive Micro-Interactions Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    
+     <!-- Executive Micro-Interactions Script -->
+<script nonce="<?= e(nonce()) ?>">
+    document.addEventListener('DOMContentLoaded', function() {
             // 1. Reading Progress Bar micro-interaction
             const progressBar = document.getElementById('wScrollProgress');
             const nav = document.getElementById('wNav');
@@ -1760,17 +2024,64 @@ $pageDesc = 'WISDOM BLENDED CLASSES — Executive preparation for the Certified 
             // 2. Responsive Mobile Menu Toggle
             const navToggle = document.getElementById('wNavToggle');
             const navMenu = document.getElementById('wNavMenu');
+            const navBackdrop = document.getElementById('wNavBackdrop');
+
+            function closeMobileNav() {
+                if (!navMenu) return;
+                navMenu.classList.remove('open');
+                if (navToggle) {
+                    navToggle.classList.remove('is-open');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                }
+                if (navBackdrop) {
+                    navBackdrop.classList.remove('is-open');
+                }
+                document.body.style.overflow = '';
+            }
+
+            function openMobileNav() {
+                if (!navMenu) return;
+                navMenu.classList.add('open');
+                if (navToggle) {
+                    navToggle.classList.add('is-open');
+                    navToggle.setAttribute('aria-expanded', 'true');
+                }
+                if (navBackdrop) {
+                    navBackdrop.classList.add('is-open');
+                }
+            }
+
             if (navToggle && navMenu) {
-                navToggle.addEventListener('click', function() {
-                    const isOpen = navMenu.classList.toggle('open');
-                    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                navToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = navMenu.classList.contains('open');
+                    if (isOpen) {
+                        closeMobileNav();
+                    } else {
+                        openMobileNav();
+                    }
                 });
+
+                if (navBackdrop) {
+                    navBackdrop.addEventListener('click', closeMobileNav);
+                }
 
                 navMenu.querySelectorAll('a').forEach(function(link) {
                     link.addEventListener('click', function() {
-                        navMenu.classList.remove('open');
-                        navToggle.setAttribute('aria-expanded', 'false');
+                        closeMobileNav();
                     });
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && navMenu.classList.contains('open')) {
+                        closeMobileNav();
+                    }
+                });
+
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 860 && navMenu.classList.contains('open')) {
+                        closeMobileNav();
+                    }
                 });
             }
 

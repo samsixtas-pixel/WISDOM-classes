@@ -69,6 +69,10 @@ return [
         'search_limit'     => 100,
         'live_refresh_sec' => 5,
     ],
+    'cache' => [
+        'dir' => dirname(__DIR__) . '/storage/cache',
+        'ttl' => 300,
+    ],
     'avatar' => [
         'dir'       => dirname(__DIR__) . '/storage/avatars',
         'max_bytes' => 2 * 1024 * 1024,

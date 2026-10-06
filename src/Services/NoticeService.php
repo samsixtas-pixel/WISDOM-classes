@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Wisdom\Services;
 
+use Wisdom\Core\App;
 use Wisdom\Core\AppException;
+use Wisdom\Core\Cache;
 use Wisdom\Models\Notice;
 use Wisdom\Models\User;
 use Wisdom\Repositories\AuditLogRepository;
@@ -60,6 +62,7 @@ final class NoticeService
         if (!in_array($durationHours, [24, 48, 72, 168], true)) $durationHours = 24;
         $expiresAt = date('Y-m-d H:i:s', time() + $durationHours * 3600);
         $id = $this->notices->create($title, $body, $admin->getId(), $expiresAt);
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($admin->getId(), 'notice.created', "notice #$id");
     }
 

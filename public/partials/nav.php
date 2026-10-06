@@ -8,7 +8,8 @@ $isStudent = !$user->isStaff();
 $isAdmin = $user->isAdmin();
 $pendingPayments = $totalUsers = $pendingResetCount = $pendingReviews = 0;
 if ($isAdmin) {
-    $counts = $_SESSION['_nav_counts'] ?? null;
+    $cache = \Wisdom\Core\App::get(\Wisdom\Core\Cache::class);
+    $counts = $cache->get('nav.counts', \Wisdom\Core\Cache::MISSING);
     if (!is_array($counts) || (int) ($counts['at'] ?? 0) < time() - 30) {
         try {
             $counts = [
@@ -21,7 +22,7 @@ if ($isAdmin) {
         } catch (\Throwable) {
             $counts = ['at' => time(), 'payments' => 0, 'users' => 0, 'resets' => 0, 'reviews' => 0];
         }
-        $_SESSION['_nav_counts'] = $counts;
+        $cache->set('nav.counts', $counts, 30);
     }
     $pendingPayments = max(0, (int) ($counts['payments'] ?? 0));
     $totalUsers = max(0, (int) ($counts['users'] ?? 0));
@@ -46,12 +47,24 @@ $icon = [
     'logout' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
 ];
 if ($isStudent) {
+    $resultsHighlight = ['state' => 'none', 'fails' => 0];
     $newResultsCount = 0;
-    try { $newResultsCount = \Wisdom\Core\App::get(\Wisdom\Repositories\UserRepository::class)->countNewResultsFor($user->getId()); } catch (\Throwable) {}
+    try {
+        /** @var \Wisdom\Repositories\UserRepository $repo */
+        $repo = \Wisdom\Core\App::get(\Wisdom\Repositories\UserRepository::class);
+        $newResultsCount = $repo->countNewResultsFor($user->getId());
+        $resultsHighlight = $repo->resultsHighlightState($user->getId());
+    } catch (\Throwable) {
+        $newResultsCount = 0;
+        $resultsHighlight = ['state' => 'none', 'fails' => 0];
+    }
     $groups = [
         '' => [['dashboard','dashboard.php','Dashboard',$icon['home'],null],['profile','profile.php','My profile',$icon['user'],null]],
-        'Learning' => [['exams','exams.php','Results',$icon['exam'],$newResultsCount ?: null],['classes','classes.php','Live classes',$icon['video'],null]],
-        'Account' => [['fees','fees.php','Fees',$icon['card'],null],['contact','contact.php','Contact support',$icon['bell'],null],['settings','settings.php','Settings',$icon['settings'],null]],
+        'Learning' => [
+            ['exams','exams.php','Results',$icon['exam'],$newResultsCount ?: null,$resultsHighlight['state'] !== 'none' ? 'rail__link--' . $resultsHighlight['state'] : ''],
+            ['classes','classes.php','Live classes',$icon['video'],null],
+        ],
+        'Account' => [['fees','fees.php','Fees',$icon['card'],null],['contact','contact.php','Contact support',$icon['bell'],null],['settings','settings.php','Settings',$icon['settings'],null],['contact','contact.php','Contact',$icon['card'],null]],
     ];
 } elseif ($isAdmin) {
     $groups = [
@@ -79,11 +92,58 @@ if ($isStudent) {
 }
 ?>
 <header class="mobile-bar" role="banner">
-    <button class="hamburger" id="hamburger" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <a href="<?= $isStudent ? 'dashboard.php' : 'admin.php' ?>" class="mobile-bar__logo"><img src="images/logo.jpeg" alt="" width="40" height="40" loading="eager" decoding="async" fetchpriority="high"><div class="mobile-bar__wordmark"><div class="wordmark">WISDOM</div><div class="wordmark-sub">BLENDED CLASSES</div></div></a>
+    <button class="hamburger" id="hamburger" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+    </button>
+    <a href="<?= $isStudent ? 'dashboard.php' : 'admin.php' ?>" class="mobile-bar__logo">
+        <img src="images/logo.jpeg" alt="" class="rail__logo" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+        <div class="mobile-bar__wordmark">
+            <div class="wordmark"></div><div class="wordmark-sub"></div></div></a>
 </header>
 <aside id="sidebar" class="rail" role="navigation" aria-label="Main navigation">
-    <div class="rail__brand"><img src="images/logo.jpeg" alt="WISDOM" class="rail__logo" width="48" height="48"><div class="rail__wordmark"><div class="wordmark">WISDOM</div><div class="wordmark-sub">Blended Classes</div></div><button class="rail__close" id="rail-close" type="button" aria-label="Close navigation"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-    <?php foreach ($groups as $title => $links): ?><div class="rail__section"><?php if ($title !== ''): ?><p class="rail__section-title"><?= e($title) ?></p><?php endif; ?><?php foreach ($links as [$key,$href,$label,$svg,$badge]): ?><a class="rail__link <?= $active === $key ? 'is-active' : '' ?>" href="<?= e($href) ?>" <?= $active === $key ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= $svg ?></span><span><?= e($label) ?></span><?php if ($badge !== null): ?><span class="rail-badge" aria-label="<?= (int) $badge ?> items"><?= (int) $badge ?></span><?php endif; ?></a><?php endforeach; ?></div><?php endforeach; ?>
-    <div class="rail__foot"><div class="rail__user"><img class="rail__user-avatar" src="avatar.php?id=<?= (int) $user->getId() ?>&amp;v=<?= e(substr((string) ($user->getAvatar() ?? 'default'),0,12)) ?>" alt="" loading="lazy" decoding="async" width="40" height="40"><div><div class="rail__user-name"><?= e($user->getName()) ?></div><div class="rail__user-role"><?= e($user->roleLabel()) ?></div></div></div><a class="rail__link" href="logout.php" style="margin-top:8px"><?= $icon['logout'] ?><span>Log out</span></a></div>
+    <div class="rail__brand">
+        <img src="images/logo.jpeg" alt="WISDOM" class="rail__logo" width="48" height="48">
+        <div class="rail__wordmark"><div class="wordmark">WISDOM</div>
+        <div class="wordmark-sub">Blended Classes</div>
+    </div>
+    <button class="rail__close" id="rail-close" type="button" aria-label="Close navigation">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m6 6 12 12M18 6 6 18"/>
+        </svg>
+    </button>
+</div>
+    <?php foreach ($groups as $title => $links): ?>
+        <div class="rail__section">
+            <?php if ($title !== ''): ?>
+                <p class="rail__section-title">
+                    <?= e($title) ?></p><?php endif; ?>
+                    <?php foreach ($links as $link): ?>
+                        <?php
+                            $key = $link[0];
+                            $href = $link[1];
+                            $label = $link[2];
+                            $svg = $link[3];
+                            $badge = $link[4] ?? null;
+                            $extra = $link[5] ?? '';
+                            $classes = trim('rail__link ' . ($active === $key ? 'is-active ' : '') . $extra);
+                        ?>
+                        <a class="<?= e($classes) ?>" href="<?= e($href) ?>" <?= $active === $key ? 'aria-current="page"' : '' ?>>
+                            <span aria-hidden="true"><?= $svg ?></span>
+                            <span><?= e($label) ?></span>
+                            <?php if ($badge !== null): ?>
+                                <span class="rail-badge" aria-label="<?= (int) $badge ?> items"><?= (int) $badge ?>
+                            </span><?php endif; ?></a>
+                            <?php endforeach; ?>
+                        </div><?php endforeach; ?>
+    <div class="rail__foot">
+        <div class="rail__user">
+            <img class="rail__user-avatar" src="avatar.php?id=<?= (int) $user->getId() ?>&amp;v=<?= e(substr((string) ($user->getAvatar() ?? 'default'),0,12)) ?>" alt="" loading="lazy" decoding="async" width="40" height="40">
+            <div>
+                <div class="rail__user-name"><?= e($user->getName()) ?></div>
+                <div class="rail__user-role"><?= e($user->roleLabel()) ?></div>
+            </div>
+        </div>
+        <a class="rail__link" href="logout.php" style="margin-top:8px"><?= $icon['logout'] ?><span>Log out</span></a></div>
 </aside>

@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Wisdom\Services;
 
+use Wisdom\Core\App;
 use Wisdom\Core\AppException;
+use Wisdom\Core\Cache;
 use Wisdom\Models\User;
 use Wisdom\Repositories\AuditLogRepository;
 use Wisdom\Repositories\UserRepository;
@@ -42,6 +44,7 @@ final class UserService
             throw new AppException('Administrator accounts cannot be suspended here.');
         }
         $this->users->setActive($userId, $active);
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($admin->getId(), $active ? 'user.reactivated' : 'user.suspended', (string) $userId);
     }
 
@@ -58,6 +61,7 @@ final class UserService
         if (!$this->users->delete($userId)) {
             throw new AppException('That account could not be deleted.');
         }
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($admin->getId(), 'user.deleted', (string) $userId);
     }
 

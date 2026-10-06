@@ -6,6 +6,7 @@ namespace Wisdom\Models;
 final class Exam
 {
     public const STATUSES = ['scheduled', 'completed', 'published'];
+    public const OUTCOMES = ['pass', 'fail'];
 
     public function __construct(
         private int $id,
@@ -17,6 +18,7 @@ final class Exam
         private ?float $result,
         private ?string $grade,
         private string $status,
+        private ?string $outcome = null,
     ) {
     }
 
@@ -32,6 +34,7 @@ final class Exam
             $row['result'] === null ? null : (float) $row['result'],
             $row['grade'] === null ? null : (string) $row['grade'],
             (string) $row['status'],
+            isset($row['outcome']) && $row['outcome'] !== null ? (string) $row['outcome'] : null,
         );
     }
 
@@ -45,9 +48,29 @@ final class Exam
         return $this->userId;
     }
 
+    public function getOutcome(): ?string
+    {
+        return $this->outcome;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
     public function isPublished(): bool
     {
         return $this->status === 'published';
+    }
+
+    public function isPass(): bool
+    {
+        return $this->outcome === 'pass';
+    }
+
+    public function isFail(): bool
+    {
+        return $this->outcome === 'fail';
     }
 
     /** Full record (admin view). */
@@ -63,6 +86,7 @@ final class Exam
             'result'       => $this->result,
             'grade'        => $this->grade,
             'status'       => $this->status,
+            'outcome'      => $this->outcome,
         ];
     }
 
@@ -73,6 +97,7 @@ final class Exam
         if (!$this->isPublished()) {
             $row['result'] = null;
             $row['grade'] = null;
+            $row['outcome'] = null;
         }
 
         return $row;

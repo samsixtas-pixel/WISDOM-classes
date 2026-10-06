@@ -41,6 +41,28 @@ final class FeeService
         return intdiv($this->totalFor($user), 2);
     }
 
+    /** Programme fees still owed (total − approved). */
+    public function programmeOutstanding(User $user): int
+    {
+        $total = $this->totalFor($user);
+        $paid = $this->payments->approvedTotalFor($user->getId(), 'programme');
+        return max(0, $total - $paid);
+    }
+
+    /** Examination fees still owed (total − approved). */
+    public function examOutstanding(User $user): int
+    {
+        $total = $this->totalFor($user);
+        $paid = $this->payments->approvedTotalFor($user->getId(), 'examination');
+        return max(0, $total - $paid);
+    }
+
+    /** Combined outstanding across both categories. */
+    public function totalOutstanding(User $user): int
+    {
+        return $this->programmeOutstanding($user) + $this->examOutstanding($user);
+    }
+
     /**
      * @param array{name?:string,tmp_name?:string,error?:int,size?:int}|null $file
      * @throws AppException

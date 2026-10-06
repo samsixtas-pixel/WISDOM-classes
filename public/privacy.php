@@ -16,7 +16,8 @@ $updated = '30 September 2026';
 <html lang="en">
 <head><?php require __DIR__ . '/partials/head.php'; ?></head>
 <body>
-<nav class="landing-nav"><div class="landing-inner"><a class="landing-brand" href="landing.php"><span class="logo-mark" aria-hidden="true">W</span><span class="wordmark">WISDOM<small>BLENDED CLASSES</small></span></a><div class="landing-links"><a href="<?= e($home) ?>">Back to app</a><a href="terms.php">Terms</a><a href="contact.php">Contact</a></div></div></nav>
+    <?php require __DIR__ . '/partials/nav.php'; ?>
+<!--<nav class="landing-nav"><div class="landing-inner"><a class="landing-brand" href="landing.php"><span class="logo-mark" aria-hidden="true">W</span><span class="wordmark">WISDOM<small>BLENDED CLASSES</small></span></a><div class="landing-links"><a href="<?= e($home) ?>">Back to app</a><a href="terms.php">Terms</a><a href="contact.php">Contact</a></div></div></nav>-->
 <main class="shell__main legal" style="max-width:840px;margin-inline:auto">
     <div class="eyebrow">Legal</div>
     <h1>Privacy policy</h1>

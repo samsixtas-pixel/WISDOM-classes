@@ -52,7 +52,7 @@ $pageTitle = 'Examination results';
                             <th>Weight</th>
                             <th>Results</th>
                             <th>Grade</th>
-                            <th>Status</th>
+                            <th>Outcome</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +65,15 @@ $pageTitle = 'Examination results';
                                 <td><?= e((string) $exam['weight']) ?></td>
                                 <td><?= $exam['result'] === null ? 'Pending' : e((string) $exam['result']) ?></td>
                                 <td><?= $exam['grade'] === null ? 'Pending' : e((string) $exam['grade']) ?></td>
-                                <td><?= e(ucfirst($exam['status'])) ?></td>
+                                <td>
+                                    <?php if (($exam['outcome'] ?? null) === 'pass'): ?>
+                                        <span class="badge badge--on">Pass</span>
+                                    <?php elseif (($exam['outcome'] ?? null) === 'fail'): ?>
+                                        <span class="badge badge--off">Fail</span>
+                                    <?php else: ?>
+                                        <span class="text-muted">—</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

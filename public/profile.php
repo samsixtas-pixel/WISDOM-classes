@@ -35,7 +35,7 @@ $pageTitle = 'My profile';
 <!doctype html>
 <html lang="en">
 <head>
-<?php require __DIR__ . '/partials/head.php'; ?>
+    <?php require __DIR__ . '/partials/head.php'; ?>
 </head>
 <body>
 <div class="shell">
@@ -46,14 +46,14 @@ $pageTitle = 'My profile';
         <h1>My profile</h1>
         <section class="card profile-card">
             <div class="profile-card__identity">
-                <img class="profile-avatar" src="avatar.php?id=<?= (int) $user->getId() ?>" alt="Profile picture">
+                <img class="profile-avatar" src="avatar.php?id=<?= (int) $user->getId() ?>&amp;v=<?= e(substr((string) ($user->getAvatar() ?? 'default'), 0, 12)) ?>" alt="Profile picture">
                 <div><h2><?= e($user->getName()) ?></h2><p class="text-muted"><?= e($user->getEmail()) ?></p><span class="badge badge--navy badge--plain"><?= e($user->roleLabel()) ?></span></div>
             </div>
             <?php if ($error !== ''): ?><p class="alert alert--error" role="alert"><?= e($error) ?></p><?php endif; ?>
             <?php if ($message !== ''): ?><p class="alert alert--success" role="status"><?= e($message) ?></p><?php endif; ?>
             <form method="post" enctype="multipart/form-data" class="stack">
                 <?= csrf_field() ?>
-                <div class="field"><label for="avatar">Profile picture</label><input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png" required><small class="text-muted">JPG or PNG, maximum 2 MB.</small></div>
+                <div class="field"><label for="avatar">Profile picture</label><input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/gif,image/webp" required><small class="text-muted">JPG, PNG, GIF or WebP, maximum 2 MB.</small></div>
                 <button class="btn btn--gold" type="submit">Save picture</button>
             </form>
         </section>

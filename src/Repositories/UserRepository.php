@@ -99,6 +99,45 @@ final class UserRepository implements RepositoryInterface
         return (int) $this->db->fetchValue("SELECT COUNT(*) FROM exams WHERE user_id = ? AND status = 'published' AND created_at > ?", [$userId, (string) $ack]);
     }
 
+    /**
+     * Compute the Results rail-link highlight state for a student.
+     *
+     * @return array{state: 'none'|'green'|'orange', fails: int}
+     */
+    public function resultsHighlightState(int $userId): array
+    {
+        $ack = $this->db->fetchValue(
+            'SELECT results_ack_at FROM users WHERE id = ? LIMIT 1',
+            [$userId]
+        );
+
+        $inWindow = ($ack === null)
+            || (strtotime((string) $ack) > time() - 3 * 3600);
+
+        if (!$inWindow) {
+            return ['state' => 'none', 'fails' => 0];
+        }
+
+        $hasPublished = (int) $this->db->fetchValue(
+            "SELECT COUNT(*) FROM exams WHERE user_id = ? AND status = 'published'",
+            [$userId]
+        );
+
+        if ($hasPublished === 0) {
+            return ['state' => 'none', 'fails' => 0];
+        }
+
+        $fails = (int) $this->db->fetchValue(
+            "SELECT COUNT(*) FROM exams WHERE user_id = ? AND status = 'published' AND outcome = 'fail'",
+            [$userId]
+        );
+
+        return [
+            'state' => $fails > 0 ? 'orange' : 'green',
+            'fails' => $fails,
+        ];
+    }
+
     public function setApproved(int $id, bool $approved): void
     {
         $this->db->execute('UPDATE users SET is_approved = ? WHERE id = ?', [(int) $approved, $id]);

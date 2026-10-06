@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Wisdom\Services;
 
+use Wisdom\Core\App;
 use Wisdom\Core\AppException;
+use Wisdom\Core\Cache;
 use Wisdom\Core\Validator;
 use Wisdom\Models\User;
 use Wisdom\Repositories\AuditLogRepository;
@@ -87,6 +89,7 @@ final class PasswordResetService
     public function requestAdminApproval(int $userId, string $note = ''): bool
     {
         $id = $this->requests->create($userId, function_exists('mb_substr') ? mb_substr($note, 0, 500) : substr($note, 0, 500));
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($userId, 'password.admin_request', "request #{$id}");
         return $id > 0;
     }
@@ -125,6 +128,7 @@ final class PasswordResetService
         $tempPassword = implode('', $chars);
         $this->users->setPasswordForcedReset($user->getId(), password_hash($tempPassword, PASSWORD_BCRYPT, ['cost' => 12]));
         $this->requests->markApproved($requestId, $admin->getId());
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($admin->getId(), 'password.admin_approved', "request #{$requestId}, user #{$user->getId()}");
         $intro = '<p>Hello ' . htmlspecialchars($user->getName(), ENT_QUOTES, 'UTF-8') . ',</p><p>Your temporary password is:</p><p><strong>' . htmlspecialchars($tempPassword, ENT_QUOTES, 'UTF-8') . '</strong></p><p>You must choose a new password after signing in.</p>';
         $this->mailer->send($user->getEmail(), 'Your WISDOM temporary password', $this->mailer->brandedTemplate('Your temporary password', $intro));
@@ -138,6 +142,7 @@ final class PasswordResetService
             throw new AppException('That request is no longer pending.');
         }
         $this->requests->markRejected($requestId, $admin->getId());
+        App::get(Cache::class)->delete('nav.counts');
         $this->audit->record($admin->getId(), 'password.admin_rejected', "request #{$requestId}");
     }
 }

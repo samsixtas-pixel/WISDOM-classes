@@ -20,6 +20,9 @@ $settings = App::get(SettingService::class);
 $totalFees = $fees->totalFor($user);
 $halfFees = $fees->halfFor($user);
 $fullyPaid = $fees->isFullyPaid($user);
+$outstanding = $fees->totalOutstanding($user);
+$hasResults = \Wisdom\Core\App::get(\Wisdom\Repositories\ExamRepository::class)
+    ->hasPublishedFor($user->getId());
 $error = '';
 
 if (Request::isPost()) {
@@ -67,6 +70,26 @@ $pageTitle = 'Fees';
             <div class="payment-method"><div><div class="field"><label for="<?= e($id) ?>"><?= e($label) ?></label></div><code class="copy-value" id="<?= e($id) ?>"><?= e($value) ?></code></div><button class="btn btn--ghost" type="button" data-copy="<?= e($id) ?>">Copy</button></div>
             <?php endforeach; ?>
         </section>
+        <?php endif; ?>
+        <?php if (!$fullyPaid && $outstanding > 0): ?>
+            <?php if ($hasResults): ?>
+                <section class="card" style="border-left:5px solid var(--danger);background:var(--danger-soft);padding:var(--s-5);margin-bottom:var(--s-6)">
+                    <p style="margin:0;color:var(--danger);font-weight:600;line-height:1.6">
+                        You have an outstanding Balance of '<?= e(money($outstanding)) ?>'.
+                        Please complete your payment to unlock and view your examination results.
+                    </p>
+                </section>
+            <?php else: ?>
+                <section class="card" style="border-left:5px solid var(--warning);background:var(--warning-soft);padding:var(--s-5);margin-bottom:var(--s-6)">
+                    <div class="eyebrow" style="color:var(--warning)">Outstanding balance</div>
+                    <div class="serif-number" style="font-size:1.8rem;color:var(--warning);margin:6px 0 4px">
+                        <?= e(money($outstanding)) ?>
+                    </div>
+                    <p style="margin:0;color:var(--ink-700);font-size:14px">
+                        Complete this payment to fully unlock your account.
+                    </p>
+                </section>
+            <?php endif; ?>
         <?php endif; ?>
         <?php if (!$fullyPaid): ?><section class="card mb-6"><div class="eyebrow">Submit a payment</div><h2>Upload payment proof</h2><form method="post" enctype="multipart/form-data" class="fee-form">
             <?= csrf_field() ?>

@@ -55,25 +55,44 @@ final class ExamRepository implements RepositoryInterface
         return ['rows' => $rows, 'total' => $total, 'page' => $query->page, 'perPage' => $query->perPage];
     }
 
-    public function create(int $userId, string $subjectCode, string $examNumber, string $subjectName, float $weight, ?float $result, ?string $grade, string $status): int
-    {
+    public function create(
+        int $userId,
+        string $subjectCode,
+        string $examNumber,
+        string $subjectName,
+        float $weight,
+        ?float $result,
+        ?string $grade,
+        string $status,
+        ?string $outcome = null,
+    ): int {
         return $this->db->insert(
-            'INSERT INTO exams (user_id, subject_code, exam_number, subject_name, weight, result, grade, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [$userId, $subjectCode, $examNumber, $subjectName, $weight, $result, $grade, $status]
+            'INSERT INTO exams (user_id, subject_code, exam_number, subject_name, weight, result, grade, status, outcome) '
+            . 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [$userId, $subjectCode, $examNumber, $subjectName, $weight, $result, $grade, $status, $outcome]
         );
     }
 
-    public function update(int $id, float $weight, ?float $result, ?string $grade, string $status): bool
+    public function update(int $id, float $weight, ?float $result, ?string $grade, string $status, ?string $outcome = null): bool
     {
         return $this->db->execute(
-            'UPDATE exams SET weight = ?, result = ?, grade = ?, status = ? WHERE id = ?',
-            [$weight, $result, $grade, $status, $id]
+            'UPDATE exams SET weight = ?, result = ?, grade = ?, status = ?, outcome = ? WHERE id = ?',
+            [$weight, $result, $grade, $status, $outcome, $id]
         ) > 0;
     }
 
     public function count(): int
     {
         return (int) $this->db->fetchValue('SELECT COUNT(*) FROM exams');
+    }
+
+    /** Has this student any published exam records? */
+    public function hasPublishedFor(int $userId): bool
+    {
+        return (int) $this->db->fetchValue(
+            "SELECT COUNT(*) FROM exams WHERE user_id = ? AND status = 'published'",
+            [$userId]
+        ) > 0;
     }
 
     public function delete(int $id): bool

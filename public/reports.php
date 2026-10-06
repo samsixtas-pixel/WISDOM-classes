@@ -52,7 +52,7 @@ table{width:100%;border-collapse:collapse}
 th,td{padding:10px;text-align:left;border-bottom:1px solid #e5e7eb}
 th{background:#f4f7fb}
 .button{display:inline-block;margin-top:14px;padding:10px 16px;border-radius:8px;color:#fff;background:#315efb}
-</style>*/</head><body><div class="shell"><?php require __DIR__ . '/partials/nav.php'; ?><main class="shell__main page-fade">
+*/</style></head><body><div class="shell"><?php require __DIR__ . '/partials/nav.php'; ?><main class="shell__main page-fade">
 <?php require __DIR__ . '/partials/admin_flash.php'; ?>
 <p><a href="admin.php">&larr; Admin workspace</a></p>
 <h1>Reports</h1>

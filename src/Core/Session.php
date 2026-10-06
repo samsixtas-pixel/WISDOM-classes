@@ -99,6 +99,23 @@ final class Session
         unset($_SESSION[$key]);
     }
 
+    /**
+     * Read a value and remove it in the same call.
+     * Used for one-shot flags like "_just_logged_in".
+     * This method was missing and caused the fatal error in notice.php.
+     */
+    public static function pull(string $key, mixed $default = null): mixed
+    {
+        if (!array_key_exists($key, $_SESSION)) {
+            return $default;
+        }
+
+        $value = $_SESSION[$key];
+        unset($_SESSION[$key]);
+
+        return $value;
+    }
+
     /** Store a one-time message (survives exactly one redirect). */
     public static function flash(string $type, string $message): void
     {

@@ -38,6 +38,7 @@ if (Request::isPost()) {
             try {
                 $user = $auth->attempt($email, $password);
                 $auth->login($user);
+                \Wisdom\Core\Session::set('_just_logged_in', true);
                 if ($user->mustResetPassword()) {
                     redirect('set_password.php');
                 }
